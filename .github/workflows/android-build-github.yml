@@ -11,6 +11,9 @@ on:
     tags:
       - 'v*.*.*'
 
+env:
+  NODE_OPTIONS: "--max-old-space-size=8192"
+
 jobs:
   build-android:
     name: Build Android APK
@@ -50,7 +53,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Prebuild Android
-        run: npx expo prebuild --platform android
+        run: npx expo prebuild --platform android --clean
 
       - name: Setup Android Keystore
         id: keystore
@@ -85,7 +88,7 @@ jobs:
           cd android
           chmod +x gradlew
           # Increase heap size for Gradle to avoid OOM
-          export GRADLE_OPTS="-Xmx4096m -Dorg.gradle.daemon=false"
+          export GRADLE_OPTS="-Xmx4096m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-XX:MaxMetaspaceSize=1g"
           ./gradlew assembleRelease -x lintVitalAnalyzeRelease \
             -Pandroid.injected.signing.store.file=$(pwd)/app/release.keystore \
             -Pandroid.injected.signing.store.password=${{ env.STORE_PASSWORD }} \
