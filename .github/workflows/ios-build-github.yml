@@ -52,29 +52,34 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             build
 
-      - name: Zip App
+      - name: Create IPA (Unsigned)
         run: |
-          cd ios/build/Build/Products/Release-iphoneos
-          zip -r CherryStudio.app.zip CherryStudio.app
+          mkdir Payload
+          mv ios/build/Build/Products/Release-iphoneos/CherryStudio.app Payload/
+          zip -r CherryStudio.ipa Payload
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-app-unsigned
-          path: ios/build/Build/Products/Release-iphoneos/CherryStudio.app.zip
+          name: ios-ipa-unsigned
+          path: CherryStudio.ipa
 
       - name: Create GitHub Release Asset
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ios/build/Build/Products/Release-iphoneos/CherryStudio.app.zip
+          files: CherryStudio.ipa
           draft: true
           prerelease: false
           body: |
             ### 🍎 iOS
-            - **Type**: Unsigned .app (For Simulator or Resigning)
+            - **Type**: Unsigned .ipa
             - **Status**: Build Successful ✅
             
-            ⚠️ **Note**: This iOS build is **unsigned**. You cannot install it directly on an iPhone. To install it, you must resign it with your own Apple Developer Certificate or run it in the iOS Simulator.
+            ⚠️ **Note**: This .ipa file is **unsigned**. You cannot install it directly.
+            **How to install:**
+            1. Download [AltStore](https://altstore.io/) or [Sideloadly](https://sideloadly.io/) on your PC/Mac.
+            2. Connect your iPhone to your computer.
+            3. Use the tool to "sideload" this .ipa file onto your device using your own Apple ID.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
