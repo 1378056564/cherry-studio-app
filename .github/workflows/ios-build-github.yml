@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build local packages
+        run: pnpm eas-build-post-install
+
       - name: Prebuild iOS
         run: npx expo prebuild --platform ios --clean
 

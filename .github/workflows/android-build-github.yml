@@ -52,6 +52,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build local packages
+        run: pnpm eas-build-post-install
+
       - name: Prebuild Android
         run: npx expo prebuild --platform android --clean
 
