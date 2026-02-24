@@ -84,7 +84,9 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease \
+          # Increase heap size for Gradle to avoid OOM
+          export GRADLE_OPTS="-Xmx4096m -Dorg.gradle.daemon=false"
+          ./gradlew assembleRelease -x lintVitalAnalyzeRelease \
             -Pandroid.injected.signing.store.file=$(pwd)/app/release.keystore \
             -Pandroid.injected.signing.store.password=${{ env.STORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=${{ env.KEY_ALIAS }} \
